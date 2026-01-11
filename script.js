@@ -2,18 +2,6 @@
 // Modern, performance-optimized JavaScript for interactive features
 
 // ===== UTILITY FUNCTIONS =====
-const debounce = (func, wait) => {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-};
-
 const throttle = (func, limit) => {
   let inThrottle;
   return function() {
@@ -243,13 +231,11 @@ class ScrollAnimations {
 }
 
 // ===== SMOOTH SCROLL POLYFILL =====
+// Note: Modern browsers support smooth scrolling natively.
+// This is a no-op check for older browser compatibility.
 const smoothScrollPolyfill = () => {
-  if (!('scrollBehavior' in document.documentElement.style)) {
-    import('https://cdn.jsdelivr.net/npm/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js')
-      .then(module => {
-        module.polyfill();
-      });
-  }
+  // CSS scroll-behavior: smooth is used as fallback
+  // No external dependencies needed for basic functionality
 };
 
 // ===== ACCESSIBILITY ENHANCEMENTS =====
@@ -356,7 +342,7 @@ class Portfolio {
       // Initialize smooth scroll polyfill
       smoothScrollPolyfill();
 
-      console.log('Portfolio website initialized successfully');
+      // All components initialized
     } catch (error) {
       console.error('Error initializing portfolio components:', error);
     }
