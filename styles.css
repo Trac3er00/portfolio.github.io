@@ -151,13 +151,7 @@ a:hover {
 }
 
 /* Better responsive containers for different sections */
-.hero-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--spacing-3xl) clamp(1rem, 4vw, 2rem);
-  position: relative;
-  z-index: 1;
-}
+/* Main .hero-container is defined in the Hero Section below */
 
 .gradient-text {
   background: var(--gradient-primary);
@@ -194,15 +188,6 @@ a:hover {
     'opsz' 24;
   font-size: inherit;
   transition: all var(--transition-fast);
-}
-
-.theme-icon {
-  font-size: 1.25rem;
-  transition: transform var(--transition-normal);
-}
-
-[data-theme="dark"] .theme-icon {
-  transform: rotate(180deg);
 }
 
 .skill-icon {
