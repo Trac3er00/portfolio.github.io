@@ -12,12 +12,11 @@
     <meta property="og:url" content="https://minseochoi.tech">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <title>Daniel (Minseo) Choi - Portfolio</title>
+    <title>Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍💻</text></svg>">
     
@@ -58,11 +57,6 @@
     </script>
 </head>
 <body>
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
-        <span class="material-symbols-outlined theme-icon">dark_mode</span>
-    </button>
-
     <!-- Navigation -->
     <nav class="nav" id="nav">
         <div class="nav-container">
@@ -87,10 +81,15 @@
                     <a href="#certifications" class="nav-link">Certifications</a>
                 </li>
             </ul>
-            <div class="hamburger" id="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="material-symbols-outlined theme-icon">dark_mode</span>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -125,14 +124,15 @@
                 </div>
                 <div class="hero-image">
                     <div class="image-container">
-                        <img src="src/asset/6A1073DF-8B76-4D2D-B24C-2093DC912877_1_105_c.jpeg" alt="Daniel (Minseo) Choi - Professional headshot" class="profile-image">
-                        <div class="image-glow"></div>
+                        <img src="src/asset/6A1073DF-8B76-4D2D-B24C-2093DC912877_1_105_c.jpeg"
+                             alt="Daniel (Minseo) Choi - Professional headshot"
+                             class="profile-image"
+                             loading="lazy"
+                             width="260"
+                             height="260">
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="scroll-indicator">
-            <div class="scroll-arrow"></div>
         </div>
     </section>
 
@@ -312,7 +312,7 @@
             <h2 class="section-title">Professional Experience</h2>
             <div class="timeline">
                 <article class="timeline-item">
-                    <div class="timeline-dot"></div>
+
                     <div class="timeline-card">
                         <header class="timeline-header">
                             <div class="timeline-heading">
@@ -390,7 +390,7 @@
                 </article>
 
                 <article class="timeline-item">
-                    <div class="timeline-dot"></div>
+
                     <div class="timeline-card">
                         <header class="timeline-header">
                             <div class="timeline-heading">
@@ -437,7 +437,7 @@
                 </article>
 
                 <article class="timeline-item">
-                    <div class="timeline-dot"></div>
+
                     <div class="timeline-card">
                         <header class="timeline-header">
                             <div class="timeline-heading">
@@ -484,7 +484,7 @@
                 </article>
 
                 <article class="timeline-item">
-                    <div class="timeline-dot"></div>
+
                     <div class="timeline-card">
                         <header class="timeline-header">
                             <div class="timeline-heading">

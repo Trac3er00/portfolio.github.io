@@ -1,383 +1,180 @@
-// ===== PORTFOLIO WEBSITE JAVASCRIPT =====
-// Modern, performance-optimized JavaScript for interactive features
+// ===== MODERN MINIMAL PORTFOLIO JS =====
 
-// ===== UTILITY FUNCTIONS =====
-const throttle = (func, limit) => {
-  let inThrottle;
-  return function() {
-    const args = arguments;
-    const context = this;
-    if (!inThrottle) {
-      func.apply(context, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+// Theme Management
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = themeToggle?.querySelector('.theme-icon');
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (themeIcon) {
+    themeIcon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
+  }
+  localStorage.setItem('theme', theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  setTheme(current === 'light' ? 'dark' : 'light');
+}
+
+// Initialize theme
+const savedTheme = localStorage.getItem('theme') ||
+  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+setTheme(savedTheme);
+
+themeToggle?.addEventListener('click', toggleTheme);
+
+// Navigation
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
+const navLinks = document.querySelectorAll('.nav-link');
+
+// Toggle mobile menu with scroll lock
+function toggleMobileMenu(open) {
+  const isOpen = open ?? !navMenu?.classList.contains('active');
+
+  hamburger?.classList.toggle('active', isOpen);
+  navMenu?.classList.toggle('active', isOpen);
+
+  // Scroll lock
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+
+  // Focus trap setup
+  if (isOpen) {
+    setupFocusTrap();
+  } else {
+    removeFocusTrap();
+  }
+}
+
+hamburger?.addEventListener('click', () => toggleMobileMenu());
+
+// Focus trap for mobile menu
+let focusTrapHandler = null;
+
+function setupFocusTrap() {
+  if (!navMenu) return;
+
+  const focusableElements = navMenu.querySelectorAll(
+    'a, button, [tabindex]:not([tabindex="-1"])'
+  );
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+
+  focusTrapHandler = (e) => {
+    if (e.key !== 'Tab') return;
+
+    if (e.shiftKey) {
+      if (document.activeElement === firstFocusable) {
+        e.preventDefault();
+        lastFocusable?.focus();
+      }
+    } else {
+      if (document.activeElement === lastFocusable) {
+        e.preventDefault();
+        firstFocusable?.focus();
+      }
     }
   };
-};
 
-// ===== THEME MANAGEMENT =====
-class ThemeManager {
-  constructor() {
-    this.theme = localStorage.getItem('theme') || 'light';
-    this.themeToggle = document.getElementById('theme-toggle');
-    this.themeIcon = this.themeToggle?.querySelector('.theme-icon');
-    this.init();
-  }
+  document.addEventListener('keydown', focusTrapHandler);
 
-  init() {
-    this.setTheme(this.theme);
-    this.bindEvents();
-  }
+  // Close on Escape
+  document.addEventListener('keydown', handleEscapeKey);
 
-  bindEvents() {
-    if (this.themeToggle) {
-      this.themeToggle.addEventListener('click', () => this.toggleTheme());
-    }
+  // Focus first item
+  firstFocusable?.focus();
+}
 
-    // Listen for system theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!localStorage.getItem('theme')) {
-        this.setTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  }
-
-  setTheme(theme) {
-    this.theme = theme;
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    if (this.themeIcon) {
-      this.themeIcon.textContent = theme === 'dark' ? 'light_mode' : 'dark_mode';
-    }
-    
-    localStorage.setItem('theme', theme);
-  }
-
-  toggleTheme() {
-    const newTheme = this.theme === 'light' ? 'dark' : 'light';
-    this.setTheme(newTheme);
+function handleEscapeKey(e) {
+  if (e.key === 'Escape' && navMenu?.classList.contains('active')) {
+    toggleMobileMenu(false);
+    hamburger?.focus();
   }
 }
 
-// ===== NAVIGATION MANAGEMENT =====
-class NavigationManager {
-  constructor() {
-    this.nav = document.getElementById('nav');
-    this.hamburger = document.getElementById('hamburger');
-    this.navMenu = document.getElementById('nav-menu');
-    this.navLinks = document.querySelectorAll('.nav-link');
-    this.sections = Array.from(document.querySelectorAll('section[id]'));
-    this.init();
+function removeFocusTrap() {
+  if (focusTrapHandler) {
+    document.removeEventListener('keydown', focusTrapHandler);
+    focusTrapHandler = null;
   }
+  document.removeEventListener('keydown', handleEscapeKey);
+}
 
-  init() {
-    this.bindEvents();
-    this.handleScroll();
-  }
-
-  bindEvents() {
-    // Mobile menu toggle
-    if (this.hamburger) {
-      this.hamburger.addEventListener('click', () => this.toggleMobileMenu());
-    }
-
-    // Close mobile menu when clicking on links
-    this.navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        this.handleNavLinkClick(e);
-        this.closeMobileMenu();
-      });
-    });
-
-    // Handle scroll for navbar styling and active link highlighting
-    window.addEventListener('scroll', throttle(() => this.handleScroll(), 100));
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!this.nav.contains(e.target) && this.navMenu?.classList.contains('active')) {
-        this.closeMobileMenu();
-      }
-    });
-  }
-
-  toggleMobileMenu() {
-    this.hamburger?.classList.toggle('active');
-    this.navMenu?.classList.toggle('active');
-    document.body.style.overflow = this.navMenu?.classList.contains('active') ? 'hidden' : '';
-  }
-
-  closeMobileMenu() {
-    this.hamburger?.classList.remove('active');
-    this.navMenu?.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  handleNavLinkClick(e) {
+// Smooth scroll and active link
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
     e.preventDefault();
-    const targetId = e.target.getAttribute('href');
-    const targetSection = document.querySelector(targetId);
+    const targetId = link.getAttribute('href');
+    const target = document.querySelector(targetId);
     
-    if (targetSection) {
-      const offsetTop = targetSection.offsetTop - 80; // Adjusted for better positioning
+    if (target) {
       window.scrollTo({
-        top: offsetTop,
+        top: target.offsetTop - 80,
         behavior: 'smooth'
       });
-      
-      // Immediately update active state
-      this.navLinks.forEach(link => link.classList.remove('active'));
-      e.target.classList.add('active');
     }
-  }
-
-  handleScroll() {
-    const scrollY = window.scrollY;
     
-    // Add/remove scrolled class to navbar
-    if (scrollY > 50) {
-      this.nav?.classList.add('scrolled');
-    } else {
-      this.nav?.classList.remove('scrolled');
-    }
+    // Close mobile menu
+    toggleMobileMenu(false);
 
-    // Highlight active navigation link
-    let current = this.sections[0]?.getAttribute('id') || 'hero';
-    const navHeight = this.nav?.offsetHeight ?? 0;
-    const referenceY = scrollY + navHeight + Math.min(window.innerHeight * 0.35, 260);
-    let found = false;
+    // Update active state
+    navLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+  });
+});
 
-    for (const section of this.sections) {
-      const sectionTop = section.offsetTop - navHeight - 12;
-      const sectionBottom = sectionTop + section.offsetHeight;
-      if (referenceY >= sectionTop && referenceY < sectionBottom) {
-        current = section.getAttribute('id') || current;
-        found = true;
-        break;
-      }
-    }
-    if (!found && referenceY < (this.sections[0]?.offsetTop ?? 0)) {
-      current = this.sections[0]?.getAttribute('id') || current;
-    }
+// Update active link on scroll (with debouncing for performance)
+const sections = document.querySelectorAll('section[id]');
+let scrollTimeout;
 
-    const viewportBottom = scrollY + window.innerHeight;
-    const docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-    if (docHeight - viewportBottom <= 4) {
-      const lastSection = this.sections[this.sections.length - 1];
-      if (lastSection) {
-        current = lastSection.getAttribute('id') || current;
-      }
-    }
+function updateActiveLink() {
+  const scrollY = window.scrollY + 100;
 
-    // Update active states
-    this.navLinks.forEach(link => {
-      link.classList.remove('active');
-      const href = link.getAttribute('href');
-      if (href === `#${current}`) {
-        link.classList.add('active');
-      }
-    });
-  }
-}
+  sections.forEach(section => {
+    const top = section.offsetTop - 100;
+    const bottom = top + section.offsetHeight;
+    const id = section.getAttribute('id');
 
-// ===== SCROLL ANIMATIONS =====
-class ScrollAnimations {
-  constructor() {
-    this.animatedElements = document.querySelectorAll('.summary-card, .project-card, .timeline-card, .cert-card, .skill-category, .info-card, .language-card');
-    this.observerOptions = {
-      threshold: 0.05,
-      rootMargin: '50px 0px -100px 0px'
-    };
-    this.init();
-  }
-
-  init() {
-    // Make ALL elements visible by default for reliable testing
-    // This ensures content is accessible immediately, preventing timing issues with browser automation
-    this.animatedElements.forEach(el => {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0) scale(1)';
-      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    });
-
-    // Optional: Add scroll-triggered animations for enhanced UX
-    // Only animate elements that scroll into view after page load
-    if ('IntersectionObserver' in window) {
-      // Small delay to ensure DOM is fully settled before observing
-      setTimeout(() => {
-        this.observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              // Add a subtle scale effect on scroll-in for elements that weren't initially visible
-              entry.target.style.transform = 'translateY(0) scale(1)';
-              this.observer.unobserve(entry.target);
-            }
-          });
-        }, this.observerOptions);
-
-        // Only observe elements that are currently below the fold
-        this.animatedElements.forEach(el => {
-          const rect = el.getBoundingClientRect();
-          const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-          
-          // Only add scroll animation to elements significantly below viewport
-          if (rect.top > windowHeight + 100) {
-            el.style.transform = 'translateY(20px) scale(0.98)';
-            this.observer.observe(el);
-          }
-        });
-      }, 100);
-    }
-  }
-}
-
-// ===== SMOOTH SCROLL POLYFILL =====
-// Note: Modern browsers support smooth scrolling natively.
-// This is a no-op check for older browser compatibility.
-const smoothScrollPolyfill = () => {
-  // CSS scroll-behavior: smooth is used as fallback
-  // No external dependencies needed for basic functionality
-};
-
-// ===== ACCESSIBILITY ENHANCEMENTS =====
-class AccessibilityEnhancer {
-  constructor() {
-    this.init();
-  }
-
-  init() {
-    // Skip to main content link
-    this.addSkipLink();
-    
-    // Keyboard navigation for custom elements
-    this.enhanceKeyboardNavigation();
-    
-    // Focus management for mobile menu
-    this.manageFocus();
-  }
-
-  addSkipLink() {
-    const skipLink = document.createElement('a');
-    skipLink.href = '#hero';
-    skipLink.textContent = 'Skip to main content';
-    skipLink.className = 'skip-link';
-    skipLink.style.cssText = `
-      position: absolute;
-      top: -40px;
-      left: 6px;
-      background: var(--primary-color);
-      color: white;
-      padding: 8px;
-      text-decoration: none;
-      border-radius: 4px;
-      z-index: 10000;
-      transition: top 0.3s;
-    `;
-    
-    skipLink.addEventListener('focus', () => {
-      skipLink.style.top = '6px';
-    });
-    
-    skipLink.addEventListener('blur', () => {
-      skipLink.style.top = '-40px';
-    });
-    
-    document.body.insertBefore(skipLink, document.body.firstChild);
-  }
-
-  enhanceKeyboardNavigation() {
-    // Add keyboard support for theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-      themeToggle.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          themeToggle.click();
+    if (scrollY >= top && scrollY < bottom) {
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${id}`) {
+          link.classList.add('active');
         }
       });
     }
-  }
-
-  manageFocus() {
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    
-    if (hamburger && navMenu) {
-      hamburger.addEventListener('click', () => {
-        // Focus first nav link when menu opens
-        setTimeout(() => {
-          if (navMenu.classList.contains('active')) {
-            const firstLink = navMenu.querySelector('.nav-link');
-            firstLink?.focus();
-          }
-        }, 100);
-      });
-    }
-  }
+  });
 }
 
-// ===== INITIALIZATION =====
-class Portfolio {
-  constructor() {
-    this.components = {};
-    this.init();
+function debouncedUpdateActiveLink() {
+  if (scrollTimeout) {
+    cancelAnimationFrame(scrollTimeout);
   }
+  scrollTimeout = requestAnimationFrame(updateActiveLink);
+}
 
-  init() {
-    // Wait for DOM to be fully loaded
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this.initializeComponents());
-    } else {
-      this.initializeComponents();
-    }
-  }
+window.addEventListener('scroll', debouncedUpdateActiveLink, { passive: true });
+updateActiveLink();
 
-  initializeComponents() {
-    try {
-      // Initialize all components
-      this.components.themeManager = new ThemeManager();
-      this.components.navigationManager = new NavigationManager();
-      this.components.scrollAnimations = new ScrollAnimations();
-      this.components.accessibilityEnhancer = new AccessibilityEnhancer();
-
-      // Initialize smooth scroll polyfill
-      smoothScrollPolyfill();
-
-      // All components initialized
-    } catch (error) {
-      console.error('Error initializing portfolio components:', error);
-    }
-  }
-
-  // Method to destroy components (useful for SPA navigation)
-  destroy() {
-    Object.values(this.components).forEach(component => {
-      if (component && typeof component.destroy === 'function') {
-        component.destroy();
+// Scroll-triggered fade-in animations (with feature detection)
+if ('IntersectionObserver' in window) {
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
       }
     });
-  }
-}
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-// ===== GLOBAL ERROR HANDLING =====
-window.addEventListener('error', (e) => {
-  console.error('JavaScript error:', e.error);
-  // In production, you might want to send this to an error tracking service
-});
-
-window.addEventListener('unhandledrejection', (e) => {
-  console.error('Unhandled promise rejection:', e.reason);
-  // In production, you might want to send this to an error tracking service
-});
-
-// ===== START THE APPLICATION =====
-const portfolio = new Portfolio();
-
-// ===== EXPORT FOR TESTING (if needed) =====
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    Portfolio,
-    ThemeManager,
-    NavigationManager,
-    ScrollAnimations
-  };
+  document.querySelectorAll('section:not(#hero)').forEach(section => {
+    section.classList.add('fade-in-section');
+    fadeObserver.observe(section);
+  });
+} else {
+  // Fallback: show all sections immediately if IntersectionObserver not supported
+  document.querySelectorAll('section:not(#hero)').forEach(section => {
+    section.classList.add('visible');
+  });
 }
